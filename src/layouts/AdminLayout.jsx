@@ -1,8 +1,16 @@
-import React from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
-import { Users, GraduationCap, LayoutDashboard, BadgeCheck, MessageSquare, CalendarCheck, AlertTriangle, UserMinus, BarChart3, Bell, Settings, LayoutList, Percent } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { Users, GraduationCap, LayoutDashboard, BadgeCheck, MessageSquare, CalendarCheck, AlertTriangle, UserMinus, BarChart3, Bell, Settings, LayoutList, Percent, Menu, X } from 'lucide-react';
 
 export default function AdminLayout() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    // Close sidebar on route change
+    setIsSidebarOpen(false);
+  }, [location.pathname]);
+
   const navItems = [
     { icon: <LayoutDashboard size={20} />, label: 'Overview', path: '/' },
     { icon: <Users size={20} />, label: 'Students', path: '/students' },
@@ -20,21 +28,25 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
+    <div className="admin-layout-container">
+      {/* Mobile Sidebar Overlay */}
+      <div 
+        className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`}
+        onClick={() => setIsSidebarOpen(false)}
+      />
+
       {/* Sidebar */}
-      <aside style={{
-        width: '260px',
-        backgroundColor: 'var(--bg-secondary)',
-        borderRight: '1px solid var(--border-color)',
-        display: 'flex',
-        flexDirection: 'column',
-        padding: '24px 0',
-      }}>
-        <div style={{ padding: '0 24px', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', fontWeight: 'bold' }}>
-            A
+      <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <div style={{ padding: '0 24px', marginBottom: '32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', fontWeight: 'bold' }}>
+              A
+            </div>
+            <span style={{ fontSize: '1.25rem', fontWeight: '700', letterSpacing: '-0.02em' }}>AdminDash</span>
           </div>
-          <span style={{ fontSize: '1.25rem', fontWeight: '700', letterSpacing: '-0.02em' }}>AdminDash</span>
+          <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(false)}>
+            <X size={24} />
+          </button>
         </div>
 
         <nav style={{ flex: 1, overflowY: 'auto', padding: '0 12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -66,12 +78,15 @@ export default function AdminLayout() {
       </aside>
 
       {/* Main Content */}
-      <main style={{
-        flex: 1,
-        overflowY: 'auto',
-        backgroundColor: 'var(--bg-primary)',
-        padding: '32px 48px',
-      }}>
+      <main className="admin-main">
+        {/* Mobile Header Toggle */}
+        <div className="mobile-menu-btn" style={{ marginBottom: '24px', marginLeft: '-8px' }}>
+          <button onClick={() => setIsSidebarOpen(true)} style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Menu size={24} />
+            <span style={{ fontSize: '1.125rem', fontWeight: '600' }}>Menu</span>
+          </button>
+        </div>
+
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <Outlet />
         </div>

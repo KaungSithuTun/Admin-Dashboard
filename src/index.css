@@ -218,3 +218,121 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }
+
+/* Responsive Overrides */
+@media (max-width: 1024px) {
+  .flex-between {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  /* Override inline grids */
+  [style*="grid-template-columns: repeat(4"],
+  [style*="grid-template-columns: 2fr 1fr"],
+  [style*="grid-template-columns: 1fr 1fr"],
+  [style*="grid-template-columns: repeat(3"] {
+    grid-template-columns: 1fr !important;
+  }
+  
+  [style*="grid-template-columns: repeat(4"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  /* Make padding responsive */
+  [style*="padding: 32px 48px"] {
+    padding: 16px 20px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .flex-between {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .flex-between > * {
+    width: 100%;
+  }
+
+  /* Force all grids to 1 column on mobile */
+  [style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Except for calendar */
+  [style*="grid-template-columns: repeat(7"] {
+    grid-template-columns: repeat(7, 1fr) !important;
+    overflow-x: auto;
+  }
+}
+
+/* Admin Layout Classes */
+.admin-layout-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+}
+
+.admin-sidebar {
+  width: 260px;
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0;
+  transition: transform 0.3s ease;
+  z-index: 50;
+}
+
+.admin-main {
+  flex: 1;
+  overflow-y: auto;
+  background-color: var(--bg-primary);
+  padding: 32px 48px;
+  width: 100%;
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 8px;
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+}
+
+@media (max-width: 1024px) {
+  .admin-sidebar {
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    transform: translateX(-100%);
+  }
+  
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .admin-main {
+    padding: 24px 20px;
+  }
+  
+  .mobile-menu-btn {
+    display: block;
+  }
+  
+  .sidebar-overlay.open {
+    display: block;
+  }
+}
