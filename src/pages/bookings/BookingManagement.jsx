@@ -7,7 +7,7 @@ const mockBookings = [
   { id: 'BK-4818', student: 'A. Wongkarn', teacher: 'A. Wichit', course: 'Business English', datetime: '17 May 14:00', status: 'Disputed', duration: '60 min', fee: '฿850', paymentStatus: 'Paid', bookedBy: 'Student (app)', studentFull: 'Anong Wongkarn', courseFull: 'Business English - Advanced' },
   { id: 'BK-4820', student: 'N. Thongchai', teacher: 'P. Niran', course: 'Math Grade 9', datetime: '17 May 09:00', status: 'Completed', duration: '90 min', fee: '฿1200', paymentStatus: 'Paid', bookedBy: 'Parent', studentFull: 'Nawat Thongchai', courseFull: 'Math Grade 9 - Algebra' },
   { id: 'BK-4815', student: 'K. Pongpae', teacher: 'T. Malee', course: 'Guitar Basics', datetime: '16 May 16:00', status: 'Cancelled', duration: '60 min', fee: '฿700', paymentStatus: 'Refunded', bookedBy: 'Student (app)', studentFull: 'Korn Pongpae', courseFull: 'Acoustic Guitar Basics' },
-  { id: 'BK-4812', student: 'M. Lertpanich', teacher: 'K. Somchai', course: 'IELTS Prep', datetime: '20 May 11:00', status: 'Upcoming', duration: '60 min', fee: '฿900', paymentStatus: 'Paid', bookedBy: 'Admin', studentFull: 'Manee Lertpanich', courseFull: 'IELTS Preparation' },
+  { id: 'BK-4812', student: 'M. Lertpanich', teacher: 'K. Somchai', course: 'IELTS Prep', datetime: '20 May 11:00', status: 'Upcoming', duration: '60 min', fee: '฿900', paymentStatus: 'Pending', bookedBy: 'Admin', studentFull: 'Manee Lertpanich', courseFull: 'IELTS Preparation' },
 ];
 
 const mockReplacementTeachers = [
@@ -46,6 +46,20 @@ export default function BookingManagement() {
       case 'Disputed':
         return <span style={{ padding: '4px 10px', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: '600', backgroundColor: 'rgba(245, 158, 11, 0.1)', color: '#F59E0B', border: '1px solid rgba(239, 68, 68, 0.5)' }}>{status}</span>;
       case 'Cancelled':
+      default:
+        return <span style={{ padding: '4px 10px', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: '600', backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>{status}</span>;
+    }
+  };
+
+  const getPaymentStatusPill = (status) => {
+    switch (status) {
+      case 'Paid':
+        return <span style={{ padding: '4px 10px', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: '600', backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10B981', border: '1px solid rgba(16, 185, 129, 0.2)' }}>Paid</span>;
+      case 'Pending':
+      case 'Not Yet':
+        return <span style={{ padding: '4px 10px', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: '600', backgroundColor: 'rgba(245, 158, 11, 0.1)', color: '#F59E0B', border: '1px solid rgba(245, 158, 11, 0.2)' }}>{status}</span>;
+      case 'Refunded':
+        return <span style={{ padding: '4px 10px', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: '600', backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#F87171', border: '1px solid rgba(239, 68, 68, 0.2)' }}>Refunded</span>;
       default:
         return <span style={{ padding: '4px 10px', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: '600', backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>{status}</span>;
     }
@@ -197,6 +211,7 @@ export default function BookingManagement() {
                 <th>Course</th>
                 <th>Date & time</th>
                 <th>Status</th>
+                <th>Payment</th>
                 <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
@@ -217,6 +232,7 @@ export default function BookingManagement() {
                   <td>{booking.course}</td>
                   <td style={{ color: 'var(--text-secondary)' }}>{booking.datetime}</td>
                   <td>{getStatusPill(booking.status)}</td>
+                  <td>{getPaymentStatusPill(booking.paymentStatus)}</td>
                   <td style={{ textAlign: 'right' }}>
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '4px' }}>
                       <button className="btn-icon btn-ghost"><Eye size={16} /></button>
