@@ -15,6 +15,7 @@ import Notifications from './pages/notifications/Notifications';
 import SystemControls from './pages/settings/SystemControls';
 import Overview from './pages/overview/Overview';
 import VerificationBadges from './pages/verification/VerificationBadges';
+import Payments from './pages/payments/Payments';
 
 
 
@@ -31,6 +32,7 @@ function App() {
           <Route path="verification" element={<VerificationBadges />} />
           <Route path="categories" element={<Categories />} />
           <Route path="commission" element={<CommissionPricing />} />
+          <Route path="payments" element={<Payments />} />
           <Route path="chat" element={<ChatMonitoring />} />
           <Route path="bookings" element={<BookingManagement />} />
           <Route path="complaints" element={<ComplaintsDisputes />} />

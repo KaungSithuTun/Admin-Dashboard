@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Users, GraduationCap, LayoutDashboard, BadgeCheck, MessageSquare, CalendarCheck, AlertTriangle, UserMinus, BarChart3, Bell, Settings, LayoutList, Percent, Menu, X } from 'lucide-react';
+import { Users, GraduationCap, LayoutDashboard, BadgeCheck, MessageSquare, CalendarCheck, AlertTriangle, UserMinus, BarChart3, Bell, Settings, LayoutList, Percent, Menu, X, CreditCard } from 'lucide-react';
 
 export default function AdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -18,6 +18,7 @@ export default function AdminLayout() {
     { icon: <BadgeCheck size={20} />, label: 'Verification', path: '/verification' },
     { icon: <LayoutList size={20} />, label: 'Categories & Subjects', path: '/categories' },
     { icon: <Percent size={20} />, label: 'Commission & Pricing', path: '/commission' },
+    { icon: <CreditCard size={20} />, label: 'Payments', path: '/payments' },
     { icon: <MessageSquare size={20} />, label: 'Chat Monitoring', path: '/chat' },
     { icon: <CalendarCheck size={20} />, label: 'Bookings', path: '/bookings' },
     { icon: <AlertTriangle size={20} />, label: 'Complaints', path: '/complaints' },
