@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, UserMinus, Edit3, BadgeCheck, BookOpen, CreditCard, Calendar, MessageCircle, Star, PenTool, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, UserMinus, Edit3, BadgeCheck, BookOpen, CreditCard, Calendar, MessageCircle, Star, PenTool, CheckCircle2, User, Image as ImageIcon, FileText, GraduationCap, DollarSign, X } from 'lucide-react';
 import ProfileHeader from '../../components/ui/ProfileHeader';
 import StatusBadge from '../../components/ui/StatusBadge';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import hamsterPic from '../../assets/media__1779642372227.png';
 
 export default function TeacherDetail() {
   const { id } = useParams();
@@ -11,6 +12,8 @@ export default function TeacherDetail() {
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [teacherStatus, setTeacherStatus] = useState('Active');
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('about');
   
   // Editable fields state
   const [payRate, setPayRate] = useState(900);
@@ -132,6 +135,286 @@ export default function TeacherDetail() {
     );
   };
 
+  const regDetails = {
+    about: {
+      firstName: 'Krittapon',
+      lastName: 'Somchai',
+      nickname: 'Krit',
+      dob: '12/03/1991',
+      email: 'krittapon.s@gmail.com',
+      gender: 'Male',
+      phone: '+66 89 012 3456',
+      countryOfBirth: 'Thailand',
+      currentCountry: 'Thailand',
+      languages: [
+        { name: 'Thai', level: 'Native' },
+        { name: 'English', level: 'C2 - Fluent / Native' },
+        { name: 'Chinese', level: 'B2 - Intermediate' }
+      ]
+    },
+    photo: {
+      url: hamsterPic,
+      sizeLimit: 'JPG or PNG, max 10 MB.'
+    },
+    description: {
+      headline: 'CELTA Certified Specialist & IELTS Coach with 8 Years Experience',
+      aboutYourself: 'Native English speaker with 8 years of IELTS and Business English teaching experience. Certified CELTA instructor. Previously taught at Chulalongkorn University and British Council Bangkok. Specialises in exam preparation and corporate communication.',
+      educationJourney: 'Bachelor of Arts in English Language and Literature from Chulalongkorn University (First Class Honors). Completed Cambridge CELTA (Certificate in English Language Teaching to Adults) with a Pass A grade.',
+      teachingExperience: 'IELTS Lead Instructor at British Council Bangkok (2020 - 2023), Lecturer in Business English at Faculty of Arts, Chulalongkorn University (2018 - 2020), Senior ESL Instructor at Wall Street English Bangkok (2016 - 2018).',
+      teachingStyle: 'My teaching style is communicative and highly personalized. I emphasize real-world exam prep strategy (IELTS/TOEIC) by diagnosing exact weak points in writing/speaking and constructing targeted feedback loops. Lessons are structured with clear sub-goals and interactive boards.'
+    },
+    subjects: {
+      list: ['Physics', 'Chemistry', 'English (IELTS Preparation)', 'Business English'],
+      educationStatus: 'Completed',
+      university: 'Chulalongkorn University',
+      degree: 'Bachelor of Arts in English Language and Literature'
+    },
+    pricing: {
+      subjects: [
+        { name: 'English (IELTS Preparation)', rate: 900 },
+        { name: 'Business English', rate: 900 },
+        { name: 'Physics', rate: 22000 },
+        { name: 'Chemistry', rate: 26000 }
+      ]
+    }
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'about':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div>
+              <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '4px', color: 'var(--text-primary)' }}>Personal Info</h4>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Personal details provided by the tutor during registration.</p>
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>First Name</label>
+                <input type="text" value={regDetails.about.firstName} readOnly style={{ width: '100%', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>Last Name</label>
+                <input type="text" value={regDetails.about.lastName} readOnly style={{ width: '100%', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>Nickname (Optional)</label>
+                <input type="text" value={regDetails.about.nickname} readOnly style={{ width: '100%', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>Date of Birth</label>
+                <input type="text" value={regDetails.about.dob} readOnly style={{ width: '100%', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }} />
+              </div>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>Email</label>
+              <input type="text" value={regDetails.about.email} readOnly style={{ width: '100%', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }} />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>Gender</label>
+                <input type="text" value={regDetails.about.gender} readOnly style={{ width: '100%', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>Phone Number</label>
+                <input type="text" value={regDetails.about.phone} readOnly style={{ width: '100%', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>Country of Birth</label>
+                <input type="text" value={regDetails.about.countryOfBirth} readOnly style={{ width: '100%', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>Current Country</label>
+                <input type="text" value={regDetails.about.currentCountry} readOnly style={{ width: '100%', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }} />
+              </div>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '8px' }}>Language Proficiencies</label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {regDetails.about.languages.map((lang, idx) => (
+                  <div key={idx} style={{ display: 'flex', gap: '12px' }}>
+                    <input type="text" value={lang.name} readOnly style={{ flex: 1, padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }} />
+                    <input type="text" value={lang.level} readOnly style={{ flex: 1, padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      case 'photo':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div>
+              <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '4px', color: 'var(--text-primary)' }}>Profile Photo</h4>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>The profile headshot uploaded by the tutor.</p>
+            </div>
+
+            <div style={{ padding: '24px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', gap: '24px' }}>
+              <div style={{
+                width: '120px',
+                height: '120px',
+                borderRadius: 'var(--radius-md)',
+                overflow: 'hidden',
+                border: '2px solid var(--border-color)',
+                backgroundColor: 'var(--bg-primary)'
+              }}>
+                <img 
+                  src={regDetails.photo.url} 
+                  alt="Tutor profile" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    e.target.src = 'https://images.unsplash.com/photo-1548767797-d8c844163c4c?w=300';
+                  }}
+                />
+              </div>
+              <div>
+                <div style={{ fontSize: '0.875rem', fontWeight: '600', marginBottom: '4px', color: 'var(--text-primary)' }}>Photo Details</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>{regDetails.photo.sizeLimit}</div>
+                <span style={{ fontSize: '0.75rem', fontWeight: '500', color: '#4ADE80', backgroundColor: 'rgba(74, 222, 128, 0.1)', padding: '4px 8px', borderRadius: 'var(--radius-full)', border: '1px solid rgba(74, 222, 128, 0.2)' }}>
+                  ✓ Approved & Live
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      case 'description':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div>
+              <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '4px', color: 'var(--text-primary)' }}>Profile Description</h4>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Tutor headline, self-introduction, and education/teaching history details.</p>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>Catchy Headline</label>
+              <input type="text" value={regDetails.description.headline} readOnly style={{ width: '100%', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none', fontWeight: '500' }} />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>About Yourself</label>
+              <textarea value={regDetails.description.aboutYourself} readOnly style={{ width: '100%', height: '80px', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none', resize: 'none', fontFamily: 'inherit', fontSize: '0.875rem' }} />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>Education Journey</label>
+              <textarea value={regDetails.description.educationJourney} readOnly style={{ width: '100%', height: '80px', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none', resize: 'none', fontFamily: 'inherit', fontSize: '0.875rem' }} />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>Teaching Experience</label>
+              <textarea value={regDetails.description.teachingExperience} readOnly style={{ width: '100%', height: '80px', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none', resize: 'none', fontFamily: 'inherit', fontSize: '0.875rem' }} />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>Teaching Style</label>
+              <textarea value={regDetails.description.teachingStyle} readOnly style={{ width: '100%', height: '80px', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none', resize: 'none', fontFamily: 'inherit', fontSize: '0.875rem' }} />
+            </div>
+          </div>
+        );
+      case 'subjects':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div>
+              <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '4px', color: 'var(--text-primary)' }}>Subjects & Education</h4>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Teaching list, degree status, and university details.</p>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '8px' }}>Subjects Approved to Teach</label>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {regDetails.subjects.list.map((subject, idx) => (
+                  <span 
+                    key={idx} 
+                    style={{ 
+                      padding: '6px 12px', 
+                      borderRadius: 'var(--radius-full)', 
+                      fontSize: '0.875rem', 
+                      fontWeight: '600', 
+                      backgroundColor: 'var(--accent-primary-alpha)', 
+                      color: 'var(--accent-primary)',
+                      border: '1px solid rgba(129, 140, 248, 0.2)' 
+                    }}
+                  >
+                    {subject}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>Education Status</label>
+              <input type="text" value={regDetails.subjects.educationStatus} readOnly style={{ width: '100%', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }} />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>University / Institution</label>
+                <input type="text" value={regDetails.subjects.university} readOnly style={{ width: '100%', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>Degree</label>
+                <input type="text" value={regDetails.subjects.degree} readOnly style={{ width: '100%', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', outline: 'none' }} />
+              </div>
+            </div>
+          </div>
+        );
+      case 'pricing':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div>
+              <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '4px', color: 'var(--text-primary)' }}>Pricing Details</h4>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Hourly rates requested for each teaching subject.</p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {regDetails.pricing.subjects.map((subject, idx) => {
+                const isUSD = subject.name === 'Physics' || subject.name === 'Chemistry';
+                const formattedRate = isUSD 
+                  ? `$${subject.rate.toLocaleString()}` 
+                  : `฿${subject.rate.toLocaleString()}`;
+                
+                return (
+                  <div 
+                    key={idx} 
+                    className="flex-between" 
+                    style={{ 
+                      padding: '16px 20px', 
+                      backgroundColor: 'var(--bg-secondary)', 
+                      border: '1px solid var(--border-color)', 
+                      borderRadius: 'var(--radius-md)' 
+                    }}
+                  >
+                    <span style={{ fontWeight: '600', fontSize: '0.875rem' }}>{subject.name}</span>
+                    <span style={{ fontWeight: '700', color: 'var(--accent-primary)', fontSize: '1.05rem' }}>
+                      {formattedRate} / hr
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div style={{ 
+              padding: '16px', 
+              backgroundColor: 'var(--accent-primary-alpha)', 
+              border: '1px dashed rgba(129, 140, 248, 0.3)', 
+              borderRadius: 'var(--radius-md)',
+              fontSize: '0.8rem',
+              color: 'var(--text-secondary)',
+              lineHeight: '1.5'
+            }}>
+              💡 TutorLearn charges a platform commission of 15% on each completed lesson. Rates are subject-specific.
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div style={{ paddingBottom: '64px' }}>
       <button 
@@ -188,6 +471,14 @@ export default function TeacherDetail() {
         ]}
         actionNode={
           <>
+            <button 
+              className="btn btn-outline" 
+              onClick={() => setIsDetailsModalOpen(true)}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              More details
+            </button>
             <button className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Edit3 size={16} /> Edit profile
             </button>
@@ -451,6 +742,123 @@ export default function TeacherDetail() {
         onConfirm={handleDrop}
         onCancel={() => setIsConfirmOpen(false)}
       />
+
+      {/* Tutor Registration Details Modal */}
+      {isDetailsModalOpen && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0,0,0,0.85)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 100
+        }}>
+          <div className="glass-panel" style={{
+            width: '900px',
+            height: '650px',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            border: '1px solid var(--border-color)',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4)'
+          }}>
+            {/* Modal Header */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '20px 24px',
+              borderBottom: '1px solid var(--border-color)'
+            }}>
+              <div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: 'var(--text-primary)', margin: 0 }}>
+                  Tutor Registration Details
+                </h3>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+                  Submitted registration information for Krittapon Somchai (ID: #TCH-00039)
+                </p>
+              </div>
+              <button 
+                onClick={() => setIsDetailsModalOpen(false)}
+                style={{
+                  background: 'var(--bg-tertiary)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--text-secondary)',
+                  cursor: 'pointer',
+                  transition: 'var(--transition)'
+                }}
+                className="close-btn"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Content Area */}
+            <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+              {/* Left Tabs Sidebar */}
+              <div style={{
+                width: '220px',
+                borderRight: '1px solid var(--border-color)',
+                backgroundColor: 'rgba(24, 24, 27, 0.5)',
+                display: 'flex',
+                flexDirection: 'column',
+                padding: '16px 8px',
+                gap: '4px'
+              }}>
+                {[
+                  { id: 'about', label: 'About', icon: <User size={16} /> },
+                  { id: 'photo', label: 'Profile Photo', icon: <ImageIcon size={16} /> },
+                  { id: 'description', label: 'Description', icon: <FileText size={16} /> },
+                  { id: 'subjects', label: 'Subjects & Edu', icon: <GraduationCap size={16} /> },
+                  { id: 'pricing', label: 'Pricing', icon: <DollarSign size={16} /> }
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: '12px 16px',
+                      borderRadius: 'var(--radius-md)',
+                      border: 'none',
+                      backgroundColor: activeTab === tab.id ? 'var(--accent-primary-alpha)' : 'transparent',
+                      color: activeTab === tab.id ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                      fontWeight: activeTab === tab.id ? '600' : '500',
+                      fontSize: '0.875rem',
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      transition: 'var(--transition)'
+                    }}
+                    className="tab-btn"
+                  >
+                    {tab.icon}
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Right content view (scrollable) */}
+              <div style={{
+                flex: 1,
+                padding: '32px',
+                overflowY: 'auto',
+                backgroundColor: 'var(--bg-primary)'
+              }}>
+                {renderTabContent()}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         .opacity-0 { opacity: 0; }
