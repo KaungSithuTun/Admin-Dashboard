@@ -99,13 +99,6 @@ const initialTeachers = [
   { id: 'TCH-005', initials: 'SP', name: 'S. Priya', sessions: 10, courses: 'SAT Math', rate: 1000, commissionRate: 0.10, status: 'Verified', bankDetails: 'Krungthai Bank (KTB) - 555-5-55555-5' },
 ];
 
-const initialLogs = [
-  { id: 1, time: 'Today, 11:20', text: 'System auto-verified payment of ฿2,400 for booking #BK-4815 (K. Pongpae)', type: 'system' },
-  { id: 2, time: 'Today, 10:45', text: 'Admin updated commission tier settings for standard courses', type: 'admin' },
-  { id: 3, time: 'Yesterday, 17:30', text: 'Blocked access for student W. Chalyarat due to unpaid invoice', type: 'access' },
-  { id: 4, time: 'Yesterday, 14:00', text: 'Payout batch #MAY2025-01 initiated by Admin', type: 'payout' }
-];
-
 export default function Payments() {
   // Page States
   const [screenshots, setScreenshots] = useState(initialScreenshots);
@@ -119,8 +112,8 @@ export default function Payments() {
 
   const [teachers, setTeachers] = useState(initialTeachers);
   const [selectedTeacherId, setSelectedTeacherId] = useState('TCH-001');
-
-  const [logs, setLogs] = useState(initialLogs);
+  const [teacherSearch, setTeacherSearch] = useState('');
+  const [teacherFilter, setTeacherFilter] = useState('All'); // 'All', 'Unpaid', 'Paid'
 
   // Modal State for Fixing Bank Details
   const [isBankModalOpen, setIsBankModalOpen] = useState(false);
@@ -135,17 +128,6 @@ export default function Payments() {
     setTimeout(() => {
       setToast(null);
     }, 4000);
-  };
-
-  const addLog = (text, type = 'admin') => {
-    const timeStr = 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const newLog = {
-      id: Date.now(),
-      time: timeStr,
-      text,
-      type
-    };
-    setLogs(prev => [newLog, ...prev]);
   };
 
   // Selected Screenshot Detail
@@ -206,6 +188,23 @@ export default function Payments() {
     });
   }, [overdueStudents, overdueSearch, overdueTab]);
 
+  // Filtered Teachers
+  const filteredTeachers = useMemo(() => {
+    return teachers.filter(t => {
+      const matchesSearch = t.name.toLowerCase().includes(teacherSearch.toLowerCase()) ||
+                            t.courses.toLowerCase().includes(teacherSearch.toLowerCase());
+      
+      let matchesFilter = true;
+      if (teacherFilter === 'Paid') {
+        matchesFilter = t.status === 'Paid';
+      } else if (teacherFilter === 'Unpaid') {
+        matchesFilter = t.status !== 'Paid';
+      }
+      
+      return matchesSearch && matchesFilter;
+    });
+  }, [teachers, teacherSearch, teacherFilter]);
+
   // Handlers for Receipt Manual Verification
   const handleApproveFull = (id) => {
     setScreenshots(prev => prev.map(s => {
@@ -214,8 +213,6 @@ export default function Payments() {
       }
       return s;
     }));
-    const item = screenshots.find(s => s.id === id);
-    addLog(`Admin approved receipt in full for booking #${id} (${item.studentFull}) - ฿${item.amountDue.toLocaleString()} paid`, 'admin');
     showToast(`Payment for #${id} approved in full!`, 'success');
   };
 
@@ -226,8 +223,6 @@ export default function Payments() {
       }
       return s;
     }));
-    const item = screenshots.find(s => s.id === id);
-    addLog(`Admin approved partial receipt for #${id} (${item.studentFull}). Requested ฿${shortAmount} balance difference.`, 'admin');
     showToast(`Approved partial payment. Sent request for ฿${shortAmount} balance to student.`, 'info');
   };
 
@@ -238,9 +233,6 @@ export default function Payments() {
       }
       return s;
     }));
-    const item = screenshots.find(s => s.id === id);
-    const reason = item.adminNote || 'Mismatch details';
-    addLog(`Admin rejected receipt for #${id} (${item.studentFull}). Reason: "${reason}"`, 'admin');
     showToast(`Rejected receipt for #${id}. Student notified.`, 'error');
   };
 
@@ -255,8 +247,6 @@ export default function Payments() {
 
   // Overdue Tracker Handlers
   const handleSendReminders = () => {
-    const list = filteredOverdueStudents.map(s => s.name).join(', ');
-    addLog(`Admin bulk-sent payment reminders to overdue students: ${list}`, 'admin');
     showToast(`Payment reminders sent to ${filteredOverdueStudents.length} overdue students!`, 'success');
   };
 
@@ -264,7 +254,6 @@ export default function Payments() {
     setOverdueStudents(prev => prev.map(s => {
       if (s.id === id) {
         const nextState = !s.accessBlocked;
-        addLog(`${nextState ? 'Blocked' : 'Restored'} course access for student ${s.name}`, 'access');
         showToast(`${s.name}'s course access has been ${nextState ? 'blocked' : 'restored'}.`, nextState ? 'error' : 'success');
         return { ...s, accessBlocked: nextState };
       }
@@ -277,36 +266,11 @@ export default function Payments() {
     setTeachers(prev => prev.map(t => {
       if (t.id === id) {
         const netAmount = t.sessions * t.rate * (1 - t.commissionRate);
-        addLog(`Admin processed payout of ฿${netAmount.toLocaleString()} to ${t.name}`, 'payout');
         showToast(`Payout of ฿${netAmount.toLocaleString()} paid to ${t.name}!`, 'success');
         return { ...t, status: 'Paid' };
       }
       return t;
     }));
-  };
-
-  const handleRunAllPayouts = () => {
-    const verifiedTeachers = teachers.filter(t => t.status === 'Verified');
-    if (verifiedTeachers.length === 0) {
-      showToast('No verified teacher payouts to process.', 'info');
-      return;
-    }
-    
-    let totalPaid = 0;
-    const teacherNames = [];
-
-    setTeachers(prev => prev.map(t => {
-      if (t.status === 'Verified') {
-        const netAmount = t.sessions * t.rate * (1 - t.commissionRate);
-        totalPaid += netAmount;
-        teacherNames.push(t.name);
-        return { ...t, status: 'Paid' };
-      }
-      return t;
-    }));
-
-    addLog(`Admin ran batch payouts. Total ฿${totalPaid.toLocaleString()} paid to: ${teacherNames.join(', ')}`, 'payout');
-    showToast(`Batch payouts processed! ฿${totalPaid.toLocaleString()} paid to ${verifiedTeachers.length} teachers.`, 'success');
   };
 
   const openBankModal = (teacher) => {
@@ -320,7 +284,6 @@ export default function Payments() {
     setTeachers(prev => prev.map(t => {
       if (t.id === editingTeacher.id) {
         const updatedStatus = bankDetailsInput.trim() ? 'Verified' : 'Blocked';
-        addLog(`Admin updated bank details for ${t.name}. Status updated to ${updatedStatus}.`, 'admin');
         showToast(`Updated bank details for ${t.name}. Status is now ${updatedStatus}.`, 'success');
         return { ...t, bankDetails: bankDetailsInput, status: updatedStatus };
       }
@@ -1010,107 +973,150 @@ export default function Payments() {
               </h2>
               <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Teachers awaiting payout</span>
             </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button className="btn btn-outline" style={{ display: 'flex', gap: '6px' }}><Download size={14}/> Export</button>
-              <button 
-                onClick={handleRunAllPayouts}
-                className="btn" 
-                style={{ display: 'flex', gap: '6px', backgroundColor: '#10B981', color: '#000' }}
-              >
-                <Play size={14} fill="#000" /> Run all payouts
-              </button>
+          </div>
+
+          {/* Teacher Filter Toolbar */}
+          <div className="flex-between" style={{ marginBottom: '20px', gap: '12px', flexWrap: 'wrap' }}>
+            <div style={{ position: 'relative', width: '280px' }}>
+              <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+              <input 
+                type="text" 
+                placeholder="Search teacher name or subject..."
+                value={teacherSearch}
+                onChange={(e) => setTeacherSearch(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px 8px 36px',
+                  backgroundColor: 'var(--bg-primary)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: 'var(--radius-md)',
+                  color: 'var(--text-primary)',
+                  outline: 'none',
+                  fontSize: '0.875rem'
+                }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              {['All', 'Unpaid', 'Paid'].map(filterTab => (
+                <button 
+                  key={filterTab}
+                  onClick={() => setTeacherFilter(filterTab)}
+                  className="btn"
+                  style={{
+                    padding: '6px 12px',
+                    fontSize: '0.825rem',
+                    backgroundColor: teacherFilter === filterTab ? 'var(--bg-tertiary)' : 'transparent',
+                    border: `1px solid ${teacherFilter === filterTab ? 'var(--text-muted)' : 'transparent'}`,
+                    borderRadius: 'var(--radius-md)',
+                    color: teacherFilter === filterTab ? 'var(--text-primary)' : 'var(--text-secondary)'
+                  }}
+                >
+                  {filterTab} ({
+                    filterTab === 'All' ? teachers.length :
+                    filterTab === 'Paid' ? teachers.filter(t => t.status === 'Paid').length :
+                    teachers.filter(t => t.status !== 'Paid').length
+                  })
+                </button>
+              ))}
+              <button className="btn btn-outline" style={{ display: 'flex', gap: '6px', padding: '6px 12px', fontSize: '0.825rem' }}><Download size={14}/> Export</button>
             </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {teachers.map(teacher => {
-              const netAmount = teacher.sessions * teacher.rate * (1 - teacher.commissionRate);
-              const isSelected = selectedTeacherId === teacher.id;
-              
-              return (
-                <div 
-                  key={teacher.id}
-                  onClick={() => setSelectedTeacherId(teacher.id)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '16px',
-                    borderRadius: 'var(--radius-lg)',
-                    border: `1px solid ${isSelected ? 'var(--accent-primary)' : 'var(--border-color)'}`,
-                    backgroundColor: isSelected ? 'var(--bg-tertiary)' : 'var(--bg-secondary)',
-                    cursor: 'pointer',
-                    transition: 'var(--transition)'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div className="avatar" style={{ backgroundColor: 'var(--bg-primary)' }}>
-                      {teacher.initials}
+            {filteredTeachers.length === 0 ? (
+              <div style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+                No teachers found matching search or filter.
+              </div>
+            ) : (
+              filteredTeachers.map(teacher => {
+                const netAmount = teacher.sessions * teacher.rate * (1 - teacher.commissionRate);
+                const isSelected = selectedTeacherId === teacher.id;
+                
+                return (
+                  <div 
+                    key={teacher.id}
+                    onClick={() => setSelectedTeacherId(teacher.id)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '16px',
+                      borderRadius: 'var(--radius-lg)',
+                      border: `1px solid ${isSelected ? 'var(--accent-primary)' : 'var(--border-color)'}`,
+                      backgroundColor: isSelected ? 'var(--bg-tertiary)' : 'var(--bg-secondary)',
+                      cursor: 'pointer',
+                      transition: 'var(--transition)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                      <div className="avatar" style={{ backgroundColor: 'var(--bg-primary)' }}>
+                        {teacher.initials}
+                      </div>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontWeight: '600', fontSize: '0.95rem' }}>{teacher.name}</span>
+                          {teacher.status === 'On hold' && (
+                            <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: '600', backgroundColor: 'rgba(245, 158, 11, 0.1)', color: '#F59E0B' }}>
+                              Suspended · hold payout
+                            </span>
+                          )}
+                          {teacher.status === 'Blocked' && (
+                            <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: '600', backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#F87171' }}>
+                              Bank details missing
+                            </span>
+                          )}
+                        </div>
+                        <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                          {teacher.sessions} sessions · {teacher.courses}
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontWeight: '600', fontSize: '0.95rem' }}>{teacher.name}</span>
-                        {teacher.status === 'On hold' && (
-                          <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: '600', backgroundColor: 'rgba(245, 158, 11, 0.1)', color: '#F59E0B' }}>
-                            Suspended · hold payout
-                          </span>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontWeight: '700', fontSize: '1.05rem' }}>
+                          ฿{netAmount.toLocaleString()}
+                        </div>
+                        <div style={{ marginTop: '4px' }}>
+                          {getPayoutStatusBadge(teacher.status)}
+                        </div>
+                      </div>
+
+                      <div onClick={(e) => e.stopPropagation()}>
+                        {teacher.status === 'Verified' && (
+                          <button 
+                            className="btn btn-outline" 
+                            style={{ fontSize: '0.75rem', padding: '6px 12px' }}
+                            onClick={() => handlePayTeacher(teacher.id)}
+                          >
+                            Pay now
+                          </button>
                         )}
                         {teacher.status === 'Blocked' && (
-                          <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: '600', backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#F87171' }}>
-                            Bank details missing
-                          </span>
+                          <button 
+                            className="btn btn-outline" 
+                            style={{ fontSize: '0.75rem', padding: '6px 12px', color: '#F87171', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+                            onClick={() => openBankModal(teacher)}
+                          >
+                            Fix details
+                          </button>
+                        )}
+                        {(teacher.status === 'On hold' || teacher.status === 'Paid') && (
+                          <button 
+                            className="btn btn-outline" 
+                            disabled 
+                            style={{ fontSize: '0.75rem', padding: '6px 12px', opacity: 0.4 }}
+                          >
+                            Pay now
+                          </button>
                         )}
                       </div>
-                      <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                        {teacher.sessions} sessions · {teacher.courses}
-                      </div>
                     </div>
+
                   </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontWeight: '700', fontSize: '1.05rem' }}>
-                        ฿{netAmount.toLocaleString()}
-                      </div>
-                      <div style={{ marginTop: '4px' }}>
-                        {getPayoutStatusBadge(teacher.status)}
-                      </div>
-                    </div>
-
-                    <div onClick={(e) => e.stopPropagation()}>
-                      {teacher.status === 'Verified' && (
-                        <button 
-                          className="btn btn-outline" 
-                          style={{ fontSize: '0.75rem', padding: '6px 12px' }}
-                          onClick={() => handlePayTeacher(teacher.id)}
-                        >
-                          Pay now
-                        </button>
-                      )}
-                      {teacher.status === 'Blocked' && (
-                        <button 
-                          className="btn btn-outline" 
-                          style={{ fontSize: '0.75rem', padding: '6px 12px', color: '#F87171', borderColor: 'rgba(239, 68, 68, 0.3)' }}
-                          onClick={() => openBankModal(teacher)}
-                        >
-                          Fix details
-                        </button>
-                      )}
-                      {(teacher.status === 'On hold' || teacher.status === 'Paid') && (
-                        <button 
-                          className="btn btn-outline" 
-                          disabled 
-                          style={{ fontSize: '0.75rem', padding: '6px 12px', opacity: 0.4 }}
-                        >
-                          Pay now
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
         </div>
 
@@ -1224,66 +1230,6 @@ export default function Payments() {
           </div>
         )}
 
-      </div>
-
-      {/* REAL-TIME AUDIT TRAIL / LOGS */}
-      <div className="glass-panel" style={{ padding: '24px' }}>
-        <div className="flex-between" style={{ marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '1rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Administrative Audit Trail — Payment Events
-          </h2>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            System activity logs for compliance and dispute resolution
-          </span>
-        </div>
-
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          gap: '12px', 
-          maxHeight: '280px', 
-          overflowY: 'auto',
-          paddingRight: '6px'
-        }}>
-          {logs.map(log => {
-            let badgeColor = 'var(--text-muted)';
-            if (log.type === 'system') badgeColor = '#4ADE80';
-            if (log.type === 'payout') badgeColor = '#60A5FA';
-            if (log.type === 'access') badgeColor = '#F87171';
-            
-            return (
-              <div 
-                key={log.id} 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'flex-start', 
-                  justifyContent: 'space-between',
-                  padding: '12px 16px', 
-                  backgroundColor: 'var(--bg-secondary)', 
-                  border: '1px solid var(--border-color)', 
-                  borderRadius: 'var(--radius-md)' 
-                }}
-              >
-                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                  <div style={{ 
-                    fontSize: '0.65rem', 
-                    fontWeight: 'bold', 
-                    textTransform: 'uppercase', 
-                    padding: '2px 8px', 
-                    borderRadius: '4px',
-                    backgroundColor: 'var(--bg-primary)',
-                    color: badgeColor,
-                    border: `1px solid ${log.type === 'system' ? 'rgba(74, 222, 128, 0.2)' : 'var(--border-color)'}`
-                  }}>
-                    {log.type}
-                  </div>
-                  <span style={{ fontSize: '0.875rem', color: 'var(--text-primary)' }}>{log.text}</span>
-                </div>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{log.time}</span>
-              </div>
-            );
-          })}
-        </div>
       </div>
 
       {/* Modal Dialog: Fix bank details */}

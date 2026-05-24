@@ -4,8 +4,8 @@ import {
   UserCheck, UserMinus, MessageCircle, ShieldOff
 } from 'lucide-react';
 import { 
-  LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  BarChart, Bar, Legend, PieChart, Pie, Cell, ScatterChart, Scatter, ZAxis
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+  Legend, ScatterChart, Scatter, ZAxis
 } from 'recharts';
 import KPICard from '../../components/ui/KPICard';
 
@@ -19,28 +19,7 @@ const revenueData = [
   { name: 'Jun', revenue: 842500, bookings: 1600 },
 ];
 
-const userGrowthData = [
-  { name: 'Jan', students: 250, teachers: 20 },
-  { name: 'Feb', students: 280, teachers: 25 },
-  { name: 'Mar', students: 310, teachers: 22 },
-  { name: 'Apr', students: 360, teachers: 30 },
-  { name: 'May', students: 390, teachers: 35 },
-  { name: 'Jun', students: 420, teachers: 40 },
-];
 
-const categoryData = [
-  { name: 'Languages', value: 38, color: '#3B82F6' },
-  { name: 'Math', value: 22, color: '#F59E0B' },
-  { name: 'Music', value: 18, color: '#10B981' },
-  { name: 'Other', value: 22, color: '#8B5CF6' },
-];
-
-const bookingStatusData = [
-  { name: 'Completed', value: 68, color: '#10B981' },
-  { name: 'Upcoming', value: 21, color: '#3B82F6' },
-  { name: 'Cancelled', value: 7, color: '#6B7280' },
-  { name: 'Disputed', value: 4, color: '#F59E0B' },
-];
 
 const topCourses = [
   { course: 'IELTS Prep', teacher: 'K. Somchai', bookings: 214, max: 250 },
@@ -164,106 +143,34 @@ export default function Analytics() {
         </ResponsiveContainer>
       </div>
 
-      {/* 2-Column Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+      {/* Top 5 courses by bookings */}
+      <div className="glass-panel" style={{ padding: '24px', marginBottom: '32px' }}>
+        <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '4px' }}>Top 5 courses by bookings</h3>
+        <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '20px' }}>This month — click to drill into course detail</p>
         
-        {/* User Growth */}
-        <div className="glass-panel" style={{ padding: '24px', height: '350px', display: 'flex', flexDirection: 'column' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '4px' }}>User growth</h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '20px' }}>New students vs new teachers per month</p>
-          <div style={{ flex: 1 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={userGrowthData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" vertical={false} />
-                <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} />
-                <Tooltip cursor={{ fill: 'var(--bg-tertiary)' }} contentStyle={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)', borderRadius: '8px' }} />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
-                <Bar dataKey="students" name="Students" fill="#3B82F6" radius={[4, 4, 0, 0]} barSize={16} />
-                <Bar dataKey="teachers" name="Teachers" fill="#F59E0B" radius={[4, 4, 0, 0]} barSize={16} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Revenue by category */}
-        <div className="glass-panel" style={{ padding: '24px', height: '350px', display: 'flex', flexDirection: 'column' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '4px' }}>Revenue by category</h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '20px' }}>Breakdown of revenue across subject categories</p>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={categoryData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value" style={{ cursor: 'pointer' }}>
-                  {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)', borderRadius: '8px' }} formatter={(value) => `${value}%`} />
-                <Legend layout="horizontal" verticalAlign="top" iconType="square" wrapperStyle={{ fontSize: '12px' }} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-      </div>
-
-      {/* 2-Column Grid Row 2 */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '32px' }}>
-        
-        {/* Top 5 courses by bookings */}
-        <div className="glass-panel" style={{ padding: '24px' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '4px' }}>Top 5 courses by bookings</h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '20px' }}>This month — click to drill into course detail</p>
-          
-          <table style={{ width: '100%', fontSize: '0.875rem', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border-color)', textAlign: 'left' }}>
-                <th style={{ paddingBottom: '12px', fontWeight: '500' }}>Course</th>
-                <th style={{ paddingBottom: '12px', fontWeight: '500' }}>Teacher</th>
-                <th style={{ paddingBottom: '12px', fontWeight: '500', textAlign: 'right' }}>Bookings</th>
+        <table style={{ width: '100%', fontSize: '0.875rem', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border-color)', textAlign: 'left' }}>
+              <th style={{ paddingBottom: '12px', fontWeight: '500' }}>Course</th>
+              <th style={{ paddingBottom: '12px', fontWeight: '500' }}>Teacher</th>
+              <th style={{ paddingBottom: '12px', fontWeight: '500', textAlign: 'right' }}>Bookings</th>
+            </tr>
+          </thead>
+          <tbody>
+            {topCourses.map((course, idx) => (
+              <tr key={idx} style={{ borderBottom: idx !== topCourses.length -1 ? '1px solid var(--border-color)' : 'none', cursor: 'pointer' }} className="group">
+                <td style={{ padding: '16px 0', fontWeight: '500', color: 'var(--text-primary)' }} className="group-hover:text-blue-400">{course.course}</td>
+                <td style={{ padding: '16px 0', color: 'var(--text-secondary)' }}>{course.teacher}</td>
+                <td style={{ padding: '16px 0', textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '12px' }}>
+                  <div style={{ width: '100px', height: '6px', background: 'var(--bg-tertiary)', borderRadius: '3px', overflow: 'hidden' }}>
+                    <div style={{ width: `${(course.bookings / course.max) * 100}%`, height: '100%', background: '#3B82F6', borderRadius: '3px' }} />
+                  </div>
+                  <span style={{ fontWeight: '600', minWidth: '30px' }}>{course.bookings}</span>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {topCourses.map((course, idx) => (
-                <tr key={idx} style={{ borderBottom: idx !== topCourses.length -1 ? '1px solid var(--border-color)' : 'none', cursor: 'pointer' }} className="group">
-                  <td style={{ padding: '16px 0', fontWeight: '500', color: 'var(--text-primary)' }} className="group-hover:text-blue-400">{course.course}</td>
-                  <td style={{ padding: '16px 0', color: 'var(--text-secondary)' }}>{course.teacher}</td>
-                  <td style={{ padding: '16px 0', textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '12px' }}>
-                    <div style={{ width: '100px', height: '6px', background: 'var(--bg-tertiary)', borderRadius: '3px', overflow: 'hidden' }}>
-                      <div style={{ width: `${(course.bookings / course.max) * 100}%`, height: '100%', background: '#3B82F6', borderRadius: '3px' }} />
-                    </div>
-                    <span style={{ fontWeight: '600', minWidth: '30px' }}>{course.bookings}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Booking status breakdown */}
-        <div className="glass-panel" style={{ padding: '24px', height: '100%', display: 'flex', flexDirection: 'column' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '4px' }}>Booking status breakdown</h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '20px' }}>All bookings this month by current status</p>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={bookingStatusData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value">
-                  {bookingStatusData.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={entry.color} 
-                      stroke={entry.name === 'Disputed' ? '#FCD34D' : 'none'} 
-                      strokeWidth={entry.name === 'Disputed' ? 2 : 0} 
-                    />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)', borderRadius: '8px' }} formatter={(value) => `${value}%`} />
-                <Legend layout="horizontal" verticalAlign="top" iconType="square" wrapperStyle={{ fontSize: '12px' }} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <div style={{ fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-muted)', letterSpacing: '0.05em', marginBottom: '16px' }}>TEACHER PERFORMANCE</div>

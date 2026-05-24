@@ -12,10 +12,7 @@ export default function CommissionPricing() {
   const [trialDuration, setTrialDuration] = useState(3);
   const [consultComm, setConsultComm] = useState(10);
 
-  const [minPrice, setMinPrice] = useState(200);
-  const [maxPrice, setMaxPrice] = useState(3000);
-  const [allowPromo, setAllowPromo] = useState(true);
-  const [maxDiscount, setMaxDiscount] = useState(30);
+
 
   // Tiers State
   const [tiers, setTiers] = useState([
@@ -89,7 +86,7 @@ export default function CommissionPricing() {
       <div className="flex-between" style={{ marginBottom: '24px' }}>
         <div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: '700', marginBottom: '4px' }}>Commission & pricing</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Control platform commission rates, teacher pay rates, and course pricing rules</p>
+          <p style={{ color: 'var(--text-secondary)' }}>Control platform commission rates and teacher pay rates</p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button 
@@ -141,71 +138,31 @@ export default function CommissionPricing() {
         Changes to global commission or pricing rules affect all teachers without individual overrides. A confirmation dialog must appear before saving.
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
-        
-        {/* Global Commission Settings */}
-        <div className="glass-panel" style={{ padding: '24px' }}>
-          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ color: 'var(--text-muted)' }}>%</span> Global commission settings
-          </h3>
-          <InputField 
-            label="Default platform commission rate" 
-            desc="Applied to all teachers unless overridden" 
-            value={globalComm} onChange={setGlobalComm} unit="%" 
-          />
-          <InputField 
-            label="New teacher trial rate" 
-            desc="Applied for first 3 months after approval" 
-            value={trialComm} onChange={setTrialComm} unit="%" 
-          />
-          <InputField 
-            label="Trial period duration" 
-            desc="Months before switching to standard rate" 
-            value={trialDuration} onChange={setTrialDuration} unit="months" 
-          />
-          <InputField 
-            label="Consultation session commission" 
-            desc="Rate applied to consultation bookings only" 
-            value={consultComm} onChange={setConsultComm} unit="%" 
-          />
-        </div>
-
-        {/* Course Pricing Rules */}
-        <div className="glass-panel" style={{ padding: '24px' }}>
-          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ color: 'var(--text-muted)' }}>฿</span> Course pricing rules
-          </h3>
-          <InputField 
-            label="Minimum course price" 
-            desc="Teachers cannot set a price below this" 
-            value={minPrice} onChange={setMinPrice} unit="/hr" 
-          />
-          <InputField 
-            label="Maximum course price" 
-            desc="Hard ceiling on teacher-set pricing" 
-            value={maxPrice} onChange={setMaxPrice} unit="/hr" 
-          />
-          
-          <div className="flex-between" style={{ padding: '16px 0', borderBottom: '1px solid var(--border-color)' }}>
-            <div>
-              <div style={{ fontWeight: '500', fontSize: '0.875rem', marginBottom: '4px' }}>Allow promotional pricing</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Teachers can offer time-limited discounts</div>
-            </div>
-            <div 
-              onClick={() => { setAllowPromo(!allowPromo); markChanged(); }}
-              style={{ width: '44px', height: '24px', borderRadius: '12px', backgroundColor: allowPromo ? 'var(--accent-primary)' : 'var(--bg-tertiary)', position: 'relative', cursor: 'pointer', transition: 'var(--transition)' }}
-            >
-              <div style={{ width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#fff', position: 'absolute', top: '3px', left: allowPromo ? '23px' : '3px', transition: 'var(--transition)' }} />
-            </div>
-          </div>
-
-          <InputField 
-            label="Max discount allowed" 
-            desc="Cap on promotional discount percentage" 
-            value={maxDiscount} onChange={setMaxDiscount} unit="%" 
-          />
-        </div>
-
+      {/* Global Commission Settings */}
+      <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px' }}>
+        <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ color: 'var(--text-muted)' }}>%</span> Global commission settings
+        </h3>
+        <InputField 
+          label="Default platform commission rate" 
+          desc="Applied to all teachers unless overridden" 
+          value={globalComm} onChange={setGlobalComm} unit="%" 
+        />
+        <InputField 
+          label="New teacher trial rate" 
+          desc="Applied for first 3 months after approval" 
+          value={trialComm} onChange={setTrialComm} unit="%" 
+        />
+        <InputField 
+          label="Trial period duration" 
+          desc="Months before switching to standard rate" 
+          value={trialDuration} onChange={setTrialDuration} unit="months" 
+        />
+        <InputField 
+          label="Consultation session commission" 
+          desc="Rate applied to consultation bookings only" 
+          value={consultComm} onChange={setConsultComm} unit="%" 
+        />
       </div>
 
       {/* Commission Tiers */}

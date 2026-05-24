@@ -21,11 +21,76 @@ const mockSubjects = [
   { id: 107, categoryId: 1, name: 'Empty Subject', activeCourses: 0, teachers: 0, status: 'Visible', slug: 'empty-subject' }, // For testing deletion
 ];
 
+const getSubjectDetails = (subjectId) => {
+  const details = {
+    101: {
+      classesCount: 8,
+      studentsCount: 12,
+      activeClasses: [
+        { courseName: 'IELTS Writing Intensive', teacherName: 'K. Somchai', studentName: 'Pimchanok Srisai', startDate: '12 Jan 2024' },
+        { courseName: 'IELTS Speaking Practice', teacherName: 'K. Somchai', studentName: 'Nawat Thongchai', startDate: '15 Mar 2024' },
+        { courseName: 'IELTS General Training', teacherName: 'S. Priya', studentName: 'Anong Wongkam', startDate: '05 Feb 2024' },
+        { courseName: 'IELTS Academic Masterclass', teacherName: 'M. Lee', studentName: 'Korn Pongpan', startDate: '10 Apr 2024' },
+      ]
+    },
+    102: {
+      classesCount: 7,
+      studentsCount: 9,
+      activeClasses: [
+        { courseName: 'Business Writing Essentials', teacherName: 'A. Wichit', studentName: 'Anong Wongkam', startDate: '22 Feb 2024' },
+        { courseName: 'Executive English Coaching', teacherName: 'A. Wichit', studentName: 'Manee Lertpanich', startDate: '01 May 2024' },
+        { courseName: 'Corporate Communications', teacherName: 'K. Somchai', studentName: 'Somchai Rattana', startDate: '18 Apr 2024' },
+      ]
+    },
+    103: {
+      classesCount: 6,
+      studentsCount: 8,
+      activeClasses: [
+        { courseName: 'Everyday Conversation', teacherName: 'J. Doe', studentName: 'W. Chalyarat', startDate: '05 May 2024' },
+        { courseName: 'Advanced Fluency Workshop', teacherName: 'S. Priya', studentName: 'K. Somkiat', startDate: '12 Feb 2024' },
+      ]
+    },
+    104: {
+      classesCount: 4,
+      studentsCount: 5,
+      activeClasses: [
+        { courseName: 'TOEIC Grammar Crash Course', teacherName: 'A. Wichit', studentName: 'P. Srisai', startDate: '20 Mar 2024' },
+      ]
+    },
+    105: {
+      classesCount: 5,
+      studentsCount: 6,
+      activeClasses: [
+        { courseName: 'Japanese N5 Basics', teacherName: 'S. Priya', studentName: 'N. Thongchai', startDate: '01 Mar 2024' },
+      ]
+    },
+    106: {
+      classesCount: 3,
+      studentsCount: 4,
+      activeClasses: [
+        { courseName: 'Beginner Thai Conversations', teacherName: 'T. Malee', studentName: 'John Smith', startDate: '10 May 2024' },
+      ]
+    },
+    107: {
+      classesCount: 0,
+      studentsCount: 0,
+      activeClasses: []
+    }
+  };
+  
+  return details[subjectId] || {
+    classesCount: 0,
+    studentsCount: 0,
+    activeClasses: []
+  };
+};
+
 export default function Categories() {
   const [categories, setCategories] = useState(mockCategories);
   const [subjects, setSubjects] = useState(mockSubjects);
   const [selectedCategoryId, setSelectedCategoryId] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState(null);
 
   // Modals state
   const [isSubjectModalOpen, setIsSubjectModalOpen] = useState(false);
@@ -208,12 +273,16 @@ export default function Categories() {
                     </thead>
                     <tbody>
                       {filteredSubjects.map(subject => (
-                        <tr key={subject.id}>
-                          <td style={{ fontWeight: '500' }}>{subject.name}</td>
+                        <tr 
+                          key={subject.id} 
+                          onClick={() => setSelectedSubject(subject)}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <td style={{ fontWeight: '500', color: 'var(--accent-primary)', textDecoration: 'underline' }}>{subject.name}</td>
                           <td>{subject.activeCourses}</td>
                           <td>{subject.teachers}</td>
                           <td><StatusPill status={subject.status} /></td>
-                          <td style={{ textAlign: 'right' }}>
+                          <td style={{ textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
                             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '4px' }}>
                               <button className="btn-icon btn-ghost" onClick={() => handleEditSubject(subject)}><Edit3 size={16}/></button>
                               <button className="btn-icon btn-ghost" style={{ color: 'var(--danger-text)' }} onClick={() => handleDeleteClick('subject', subject)}><Trash2 size={16}/></button>
@@ -290,6 +359,97 @@ export default function Categories() {
           </div>
         </div>
       )}
+
+      {/* Subject Detail Modal */}
+      {selectedSubject && (() => {
+        const details = getSubjectDetails(selectedSubject.id);
+        return (
+          <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
+            <div className="glass-panel" style={{ width: '600px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', maxHeight: '85vh', overflowY: 'auto' }}>
+              <div className="flex-between">
+                <div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: '700' }}>{selectedSubject.name}</h3>
+                  <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                    Subject in category: <strong>{selectedCategory?.name}</strong>
+                  </span>
+                </div>
+                <button className="btn-icon btn-ghost" onClick={() => setSelectedSubject(null)}><X size={20}/></button>
+              </div>
+
+              {/* Stats Row */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+                <div style={{ padding: '16px', backgroundColor: 'var(--bg-primary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Active classes</div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: '700' }}>{details.classesCount}</div>
+                </div>
+                <div style={{ padding: '16px', backgroundColor: 'var(--bg-primary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Total students</div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: '700' }}>{details.studentsCount}</div>
+                </div>
+                <div style={{ padding: '16px', backgroundColor: 'var(--bg-primary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Status</div>
+                  <div style={{ fontSize: '1rem', fontWeight: '600', marginTop: '6px' }}>
+                    <span style={{ 
+                      padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', 
+                      backgroundColor: selectedSubject.status === 'Visible' ? 'rgba(74, 222, 128, 0.1)' : 'rgba(251, 146, 60, 0.1)', 
+                      color: selectedSubject.status === 'Visible' ? '#4ADE80' : '#FB923C' 
+                    }}>
+                      {selectedSubject.status}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Active Classes Detail List */}
+              <div>
+                <h4 style={{ fontSize: '0.875rem', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>
+                  Enrolled Classes & Schedule details
+                </h4>
+
+                {details.activeClasses.length === 0 ? (
+                  <div style={{ padding: '24px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                    No active classes registered under this subject.
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {details.activeClasses.map((cls, index) => (
+                      <div 
+                        key={index} 
+                        style={{ 
+                          padding: '16px', 
+                          backgroundColor: 'var(--bg-primary)', 
+                          border: '1px solid var(--border-color)', 
+                          borderRadius: 'var(--radius-md)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '6px'
+                        }}
+                      >
+                        <div className="flex-between">
+                          <strong style={{ color: 'var(--text-primary)', fontSize: '0.925rem' }}>{cls.courseName}</strong>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Started {cls.startDate}</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '16px', fontSize: '0.825rem', color: 'var(--text-secondary)' }}>
+                          <div>
+                            Teacher: <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>{cls.teacherName}</span>
+                          </div>
+                          <div>
+                            Student: <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>{cls.studentName}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
+                <button className="btn btn-outline" onClick={() => setSelectedSubject(null)}>Close details</button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Custom Delete Dialog (Handles block warnings too) */}
       {deleteConfirmOpen && (

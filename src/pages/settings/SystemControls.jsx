@@ -32,8 +32,6 @@ export default function SystemControls() {
     selfRescheduling: true,
     newStudentReg: true,
     newTeacherApp: true,
-    paymentProcessing: true,
-    promotionalPricing: true,
     inAppChat: true,
     requireTeacherApproval: true
   });
@@ -117,11 +115,9 @@ export default function SystemControls() {
             <ToggleSwitch label="Self-rescheduling by student" desc="Allow students to move their own sessions" isOn={toggles.selfRescheduling} onToggle={() => handleToggleClick('selfRescheduling')} />
           </div>
           <div>
-            <div style={{ fontSize: '0.875rem', fontWeight: '600', marginBottom: '16px', color: 'var(--text-primary)' }}>Registration & payments</div>
+            <div style={{ fontSize: '0.875rem', fontWeight: '600', marginBottom: '16px', color: 'var(--text-primary)' }}>Registration & chat</div>
             <ToggleSwitch label="New student registrations" desc="Allow new accounts to be created" isOn={toggles.newStudentReg} onToggle={() => handleToggleClick('newStudentReg')} />
             <ToggleSwitch label="New teacher applications" desc="Accept teacher sign-ups for review" isOn={toggles.newTeacherApp} onToggle={() => handleToggleClick('newTeacherApp')} />
-            <ToggleSwitch label="Payment processing" desc="Allow new payments through the platform" isOn={toggles.paymentProcessing} onToggle={() => handleToggleClick('paymentProcessing')} />
-            <ToggleSwitch label="Promotional pricing" desc="Allow teachers to set discounted prices" isOn={toggles.promotionalPricing} onToggle={() => handleToggleClick('promotionalPricing')} />
             <ToggleSwitch label="In-app chat" desc="Enable messaging between students and teachers" isOn={toggles.inAppChat} onToggle={() => handleToggleClick('inAppChat')} />
           </div>
         </div>

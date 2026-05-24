@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, BookOpen, DollarSign, Activity, ArrowUpRight, ArrowDownRight, Clock, ShieldCheck, MessageSquare } from 'lucide-react';
+import { Users, BookOpen, DollarSign, ArrowUpRight, ArrowDownRight, Clock } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
 const revenueData = [
@@ -20,13 +20,6 @@ const sessionsData = [
   { name: 'Fri', completed: 160, cancelled: 10 },
   { name: 'Sat', completed: 210, cancelled: 22 },
   { name: 'Sun', completed: 190, cancelled: 18 },
-];
-
-const recentActivity = [
-  { id: 1, type: 'payment', text: 'Payout batch #4402 processed', time: '10 min ago', icon: <DollarSign size={16} /> },
-  { id: 2, type: 'verification', text: 'Teacher application: A. Wichit approved', time: '1 hour ago', icon: <ShieldCheck size={16} /> },
-  { id: 3, type: 'dispute', text: 'New dispute raised for booking #BK-4818', time: '2 hours ago', icon: <MessageSquare size={16} /> },
-  { id: 4, type: 'system', text: 'System controls: "Promotional pricing" disabled', time: '5 hours ago', icon: <Activity size={16} /> },
 ];
 
 export default function Overview() {
@@ -123,33 +116,6 @@ export default function Overview() {
           </div>
         </div>
 
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
-        {/* Recent Activity Log */}
-        <div className="glass-panel" style={{ padding: '24px' }}>
-          <div className="flex-between" style={{ marginBottom: '24px' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: '600' }}>Recent Administrative Activity</h3>
-            <button className="btn-icon btn-ghost" style={{ fontSize: '0.875rem' }}>View all logs</button>
-          </div>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {recentActivity.map(log => (
-              <div key={log.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '12px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--bg-tertiary)' }}>
-                <div style={{ padding: '10px', borderRadius: '50%', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-secondary)' }}>
-                  {log.icon}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: '500', fontSize: '0.875rem', marginBottom: '2px' }}>{log.text}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{log.time}</div>
-                </div>
-                <div>
-                  <button className="btn btn-outline" style={{ padding: '4px 12px', fontSize: '0.75rem' }}>View</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
 
     </div>
