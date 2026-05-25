@@ -7,10 +7,10 @@ export default function CommissionPricing() {
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
   
   // Settings State
-  const [globalComm, setGlobalComm] = useState(15);
+  const [studentComm, setStudentComm] = useState(5);
+  const [tutorComm, setTutorComm] = useState(15);
   const [trialComm, setTrialComm] = useState(10);
   const [trialDuration, setTrialDuration] = useState(3);
-  const [consultComm, setConsultComm] = useState(10);
 
 
 
@@ -112,8 +112,8 @@ export default function CommissionPricing() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
         <div className="glass-panel" style={{ padding: '20px' }}>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: '500' }}>Platform commission (avg)</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '4px' }}>15%</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Across all teachers</div>
+          <div style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '4px' }}>{studentComm}% / {tutorComm}%</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Student / Tutor rates</div>
         </div>
         <div className="glass-panel" style={{ padding: '20px' }}>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: '500' }}>Commission earned (May)</div>
@@ -144,9 +144,14 @@ export default function CommissionPricing() {
           <span style={{ color: 'var(--text-muted)' }}>%</span> Global commission settings
         </h3>
         <InputField 
-          label="Default platform commission rate" 
-          desc="Applied to all teachers unless overridden" 
-          value={globalComm} onChange={setGlobalComm} unit="%" 
+          label="Default student commission rate" 
+          desc="Service fee rate applied to students on booking checkout" 
+          value={studentComm} onChange={setStudentComm} unit="%" 
+        />
+        <InputField 
+          label="Default tutor commission rate" 
+          desc="Platform commission rate deducted from tutor earnings" 
+          value={tutorComm} onChange={setTutorComm} unit="%" 
         />
         <InputField 
           label="New teacher trial rate" 
@@ -157,11 +162,6 @@ export default function CommissionPricing() {
           label="Trial period duration" 
           desc="Months before switching to standard rate" 
           value={trialDuration} onChange={setTrialDuration} unit="months" 
-        />
-        <InputField 
-          label="Consultation session commission" 
-          desc="Rate applied to consultation bookings only" 
-          value={consultComm} onChange={setConsultComm} unit="%" 
         />
       </div>
 
@@ -239,8 +239,8 @@ export default function CommissionPricing() {
             </thead>
             <tbody>
               {overrides.map((override) => {
-                const isLower = override.customRate < override.globalRate;
-                const isHigher = override.customRate > override.globalRate;
+                const isLower = override.customRate < tutorComm;
+                const isHigher = override.customRate > tutorComm;
                 let bg = 'var(--bg-tertiary)', color = 'var(--text-secondary)';
                 if(isLower) { bg = 'rgba(74, 222, 128, 0.1)'; color = '#4ADE80'; }
                 if(isHigher) { bg = 'rgba(239, 68, 68, 0.1)'; color = '#F87171'; }
@@ -251,7 +251,7 @@ export default function CommissionPricing() {
                     <td style={{ color: 'var(--text-secondary)' }}>{override.reason}</td>
                     <td>
                       <span style={{ padding: '4px 8px', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: '600', backgroundColor: bg, color: color }}>
-                        {override.customRate}% <span style={{ fontWeight: '400', opacity: 0.7 }}>vs {override.globalRate}%</span>
+                        {override.customRate}% <span style={{ fontWeight: '400', opacity: 0.7 }}>vs {tutorComm}%</span>
                       </span>
                     </td>
                     <td style={{ fontWeight: '500' }}>฿{override.payRate}/hr</td>
@@ -270,58 +270,11 @@ export default function CommissionPricing() {
         </div>
       </div>
 
-      {/* Change Log */}
-      <div className="glass-panel" style={{ padding: '24px' }}>
-        <h3 style={{ fontSize: '1.125rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
-          Change log
-        </h3>
-        
-        <table style={{ width: '100%', fontSize: '0.875rem', borderCollapse: 'collapse', textAlign: 'left' }}>
-          <thead>
-            <tr style={{ color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-color)' }}>
-              <th style={{ paddingBottom: '12px', fontWeight: '500' }}>Date</th>
-              <th style={{ paddingBottom: '12px', fontWeight: '500' }}>Changed by</th>
-              <th style={{ paddingBottom: '12px', fontWeight: '500' }}>Change</th>
-              <th style={{ paddingBottom: '12px', fontWeight: '500' }}>Previous</th>
-              <th style={{ paddingBottom: '12px', fontWeight: '500' }}>New value</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
-              <td style={{ padding: '16px 0', color: 'var(--text-secondary)' }}>14 May 2025</td>
-              <td style={{ padding: '16px 0' }}>Admin (Somsak)</td>
-              <td style={{ padding: '16px 0' }}>Global commission rate</td>
-              <td style={{ padding: '16px 0', color: 'var(--text-secondary)' }}>18%</td>
-              <td style={{ padding: '16px 0' }}>
-                <span style={{ padding: '2px 8px', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: '500', backgroundColor: 'rgba(74, 222, 128, 0.1)', color: '#4ADE80' }}>15%</span>
-              </td>
-            </tr>
-            <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
-              <td style={{ padding: '16px 0', color: 'var(--text-secondary)' }}>2 Apr 2025</td>
-              <td style={{ padding: '16px 0' }}>Admin (Somsak)</td>
-              <td style={{ padding: '16px 0' }}>Override added — T. Malee</td>
-              <td style={{ padding: '16px 0', color: 'var(--text-secondary)' }}>15% (default)</td>
-              <td style={{ padding: '16px 0' }}>
-                <span style={{ padding: '2px 8px', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: '500', backgroundColor: 'rgba(251, 146, 60, 0.1)', color: '#FB923C' }}>20%</span>
-              </td>
-            </tr>
-            <tr>
-              <td style={{ padding: '16px 0', color: 'var(--text-secondary)' }}>1 Jan 2025</td>
-              <td style={{ padding: '16px 0' }}>Admin (Priya)</td>
-              <td style={{ padding: '16px 0' }}>Min course price</td>
-              <td style={{ padding: '16px 0', color: 'var(--text-secondary)' }}>฿150/hr</td>
-              <td style={{ padding: '16px 0' }}>
-                <span style={{ padding: '2px 8px', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: '500', backgroundColor: 'rgba(59, 130, 246, 0.1)', color: '#3B82F6' }}>฿200/hr</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
 
       <ConfirmDialog
         isOpen={isSaveModalOpen}
         title="Confirm global changes"
-        message="This will affect 184 teachers currently using the default global rates. Are you sure you want to apply these changes?"
+        message="This will affect all bookings and teachers currently using the default global rates. Are you sure you want to apply these changes?"
         confirmText="Save changes"
         onConfirm={handleConfirmSave}
         onCancel={() => setIsSaveModalOpen(false)}
